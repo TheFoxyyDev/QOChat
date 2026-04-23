@@ -1,0 +1,8 @@
+name: WelcomePlugin
+version: 1.0.0
+main: com.niqbit.qochat.WelcomePlugin
+api-version: '1.21'
+author: TheFoxyyDev
+description: Shows a welcome title to players when they join.
+depend:
+  - LuckPerms
