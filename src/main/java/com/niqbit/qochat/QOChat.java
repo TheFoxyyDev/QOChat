@@ -12,7 +12,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.time.Duration;
 
-public class WelcomePlugin extends JavaPlugin implements Listener {
+public class QOChat extends JavaPlugin implements Listener {
 
     public String getFormattedTime(World world) {
         long ticks = world.getTime();
@@ -31,9 +31,11 @@ public class WelcomePlugin extends JavaPlugin implements Listener {
         try {
             JoinLeaveListener joinLeaveListener = new JoinLeaveListener(this);
             DeathListener deathListener = new DeathListener(this);
+            TabListManager tabListManager = new TabListManager(this);
             getServer().getPluginManager().registerEvents(joinLeaveListener, this);
             getServer().getPluginManager().registerEvents(new ChatListener(this, joinLeaveListener), this);
             getServer().getPluginManager().registerEvents(deathListener, this);
+            getServer().getPluginManager().registerEvents(tabListManager, this);
         } catch (Exception e) {
             getLogger().severe("Failed to initialize listeners: " + e.getClass().getName() + " — " + e.getMessage());
         }
@@ -64,6 +66,7 @@ public class WelcomePlugin extends JavaPlugin implements Listener {
                     Duration.ofMillis(500)
             );
             player.showTitle(Title.title(title, subtitle, times));
+            player.showTitle(Title.title(title, subtitle, times));
 
             Bukkit.getScheduler().runTaskLater(this, () -> {
                 Component actionBar = Component.text("Current Time: ")
@@ -71,6 +74,6 @@ public class WelcomePlugin extends JavaPlugin implements Listener {
                 player.sendActionBar(actionBar);
             }, 10L);
 
-        }, 80L);
+        }, 60L);
     }
 }

@@ -3,57 +3,40 @@ package com.niqbit.qochat;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
-import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.cacheddata.CachedMetaData;
 import net.luckperms.api.model.user.User;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.logging.Logger;
 
-public class DeathListener implements Listener {
+public class TabListManager implements Listener {
 
-    private final Logger logger;
     private final LuckPerms luckPerms;
+    private final Logger logger;
 
-    public DeathListener(JavaPlugin plugin) {
+    public TabListManager(JavaPlugin plugin) {
         this.logger = plugin.getLogger();
         this.luckPerms = LuckPermsProvider.get();
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void onPlayerDeath(PlayerDeathEvent event) {
-        Player player = event.getEntity();
+    @EventHandler
+    public void onJoin(PlayerJoinEvent event) {
 
-        try {
-            assert event.deathMessage() != null;
-        } catch (AssertionError _e) {
-            logger.severe("Death message is null. Unable to display");
-        }
-
-        String msgs = PlainTextComponentSerializer.plainText().serialize(event.deathMessage());
-        Component msg = Component.text(msgs.substring(msgs.indexOf(" ")), NamedTextColor.GRAY);
-
-        event.deathMessage(null);
-
+        Player player = event.getPlayer();
         RoleInfo role = getRoleInfo(player);
 
-        Component message = Component.text("[", NamedTextColor.GRAY)
-                                .append(Component.text("\uD83D\uDC80", NamedTextColor.RED))
-                                .append(Component.text("] ", NamedTextColor.GRAY))
-                                .append(Component.text(role.prefix, role.color))
-                                .append(Component.text(" | ", NamedTextColor.GRAY))
-                                .append(Component.text(player.getName(), NamedTextColor.WHITE))
-                                .append(msg);
+        Component name = Component.text(" " + role.prefix, role.color)
+                         .append(Component.text(" | ", NamedTextColor.GRAY))
+                         .append(Component.text(player.getName(), NamedTextColor.WHITE));
 
-        Bukkit.broadcast(message);
+        player.playerListName(name);
+
     }
 
     RoleInfo getRoleInfo(Player player) {
